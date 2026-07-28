@@ -1,0 +1,8 @@
+export { default as statistics } from './statistics'
+export { default as projects } from './projects'
+export { default as testimonials } from './testimonials'
+export { default as processSteps } from './process'
+export { default as industries } from './industries'
+export { default as hero } from './hero'
+export { default as framework } from './framework'
+export { default as whyUs } from './whyUs'

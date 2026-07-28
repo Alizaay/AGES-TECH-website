@@ -1,0 +1,6 @@
+export { api, default as defaultApi } from './api'
+export { http } from './axios'
+export { contactService, sendContactEmail } from './contact.service'
+export { newsletterService } from './newsletter.service'
+export { projectsService } from './projects.service'
+export { servicesService } from './services.service'

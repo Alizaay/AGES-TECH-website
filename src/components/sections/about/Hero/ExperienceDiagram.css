@@ -1,0 +1,202 @@
+/* Matches the HTML `#pws-circle-area` prototype UI */
+
+.pws-circle-area {
+  --radius: 34%;
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  height: auto;
+  margin-inline: auto;
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.pws-circle-area.is-visible {
+  animation: pwsScaleIn 1s ease forwards;
+  animation-delay: 0.2s;
+}
+
+.pws-circle-area svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pws-icon {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  opacity: 0;
+  z-index: 1;
+}
+
+.pws-circle-area.is-visible .pws-icon {
+  animation: pwsIconPop 0.6s ease forwards;
+}
+
+.pws-icon img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 6px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  /* Icons are white-on-black; screen blend removes the black plate on navy */
+  mix-blend-mode: screen;
+}
+
+.pws-icon:hover img {
+  transform: scale(1.1);
+}
+
+/* Quadrant positions — same calc as the HTML prototype */
+.pws-icon-top {
+  top: calc(50% - var(--radius) * 0.68);
+  left: calc(50% + var(--radius) * 0.68);
+  animation-delay: 0.6s;
+}
+
+.pws-icon-right {
+  top: calc(50% + var(--radius) * 0.68);
+  left: calc(50% + var(--radius) * 0.68);
+  animation-delay: 0.75s;
+}
+
+.pws-icon-bottom {
+  top: calc(50% + var(--radius) * 0.68);
+  left: calc(50% - var(--radius) * 0.68);
+  animation-delay: 0.9s;
+}
+
+.pws-icon-left {
+  top: calc(50% - var(--radius) * 0.68);
+  left: calc(50% - var(--radius) * 0.68);
+  animation-delay: 1.05s;
+}
+
+.pws-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  width: clamp(140px, 36.5%, 190px);
+  height: clamp(140px, 36.5%, 190px);
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 10px solid #e5e6ea;
+  background: white;
+  text-align: center;
+  color: #062b55;
+}
+
+.pws-counter {
+  margin: 0;
+  font-size: clamp(1.75rem, 8vw, 42px);
+  font-weight: 700;
+  line-height: 1;
+  color: #062b55;
+}
+
+.pws-center span {
+  margin-top: 6px;
+  font-size: clamp(0.7rem, 2.4vw, 0.95rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #062b55;
+}
+
+@keyframes pwsScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pwsIconPop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pws-circle-area,
+  .pws-circle-area.is-visible,
+  .pws-circle-area.is-visible .pws-icon {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .pws-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 900px) {
+  .pws-circle-area {
+    width: min(100%, 420px);
+  }
+
+  .pws-icon {
+    font-size: 13px;
+  }
+
+  .pws-icon img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .pws-center {
+    border-width: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .pws-circle-area {
+    width: min(100%, 300px);
+    --radius: 38%;
+  }
+
+  .pws-icon {
+    font-size: 11px;
+  }
+
+  .pws-icon img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+  }
+
+  .pws-center {
+    width: clamp(100px, 34%, 132px);
+    height: clamp(100px, 34%, 132px);
+    border-width: 6px;
+  }
+
+  .pws-counter {
+    font-size: clamp(1.35rem, 9vw, 1.75rem);
+  }
+
+  .pws-center span {
+    margin-top: 4px;
+    font-size: clamp(0.62rem, 2.8vw, 0.75rem);
+  }
+}

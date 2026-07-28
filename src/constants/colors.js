@@ -1,0 +1,1 @@
+export { colors, default } from '@/design-system/colors'
