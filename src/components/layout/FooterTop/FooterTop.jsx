@@ -75,8 +75,18 @@ const SocialIcon = ({ name }) => {
 
 const FooterTop = () => {
   const contactItems = [
-    { type: 'phone', value: contact.phone, label: 'Call us' },
-    { type: 'email', value: contact.email, label: 'Email us' },
+    {
+      type: 'phone',
+      value: contact.phone,
+      label: 'Call us',
+      href: `tel:${contact.phoneE164}`,
+    },
+    {
+      type: 'email',
+      value: contact.email,
+      label: 'Email us',
+      href: `mailto:${contact.email}`,
+    },
     { type: 'address', value: contact.address, label: 'Visit us' },
   ]
 
@@ -120,9 +130,18 @@ const FooterTop = () => {
                 <ContactIcon type={item.type} />
               </span>
               <div className="min-w-0 pt-0.5">
-                <p className="break-words text-sm font-semibold leading-snug text-white sm:text-base">
-                  {item.value}
-                </p>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    className="break-words text-sm font-semibold leading-snug text-white transition hover:text-[#7EC8F8] sm:text-base"
+                  >
+                    {item.value}
+                  </a>
+                ) : (
+                  <p className="break-words text-sm font-semibold leading-snug text-white sm:text-base">
+                    {item.value}
+                  </p>
+                )}
                 <p className="mt-0.5 text-xs text-white/55 sm:text-[13px]">{item.label}</p>
               </div>
             </FadeInItem>

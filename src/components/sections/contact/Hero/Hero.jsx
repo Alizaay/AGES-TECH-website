@@ -62,8 +62,8 @@ const Hero = () => {
       </div>
 
       <Container className="relative z-[1]">
-        <div className="grid items-start gap-8 md:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-12 xl:gap-16">
-          <div className="min-w-0">
+        <div className="grid items-start gap-8 md:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-12 xl:gap-16">
+          <div className="flex min-w-0 flex-col justify-center">
             <FadeIn>
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2F80ED] sm:text-xs">
                 {contactHero.badge}
@@ -139,7 +139,16 @@ const Hero = () => {
                         <Icon size={16} strokeWidth={1.75} aria-hidden="true" />
                       </span>
                       <span className="min-w-0 break-words text-sm font-medium leading-snug">
-                        {detail.label}
+                        {detail.href ? (
+                          <a
+                            href={detail.href}
+                            className="transition hover:text-[#7EC8F8]"
+                          >
+                            {detail.label}
+                          </a>
+                        ) : (
+                          detail.label
+                        )}
                       </span>
                     </li>
                   )

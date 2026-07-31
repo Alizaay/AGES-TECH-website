@@ -102,7 +102,7 @@ const ContactFormSection = () => {
       className="scroll-mt-28 overflow-x-clip bg-[#F3F7FA] py-12 sm:py-16 md:py-20 lg:py-24"
     >
       <Container>
-        <div className="grid items-start gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:gap-8">
+        <div className="grid items-start gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:items-center lg:gap-8">
           <FadeIn className="min-w-0">
             <div className="rounded-2xl border border-[#E8EEF5] bg-white p-4 shadow-[0_16px_44px_rgba(16,42,67,0.08)] xs:p-5 sm:p-7 md:p-8 lg:p-9">
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2F80ED] sm:text-xs">

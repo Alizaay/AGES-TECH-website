@@ -21,8 +21,18 @@ export const contactHero = {
     description:
       "Tell us about your vision. We'll connect you with the right engineering and strategy experts.",
     details: [
-      { id: 'email', label: contactConfig.email, icon: 'mail' },
-      { id: 'phone', label: contactConfig.phone, icon: 'phone' },
+      {
+        id: 'email',
+        label: contactConfig.email,
+        icon: 'mail',
+        href: `mailto:${contactConfig.email}`,
+      },
+      {
+        id: 'phone',
+        label: contactConfig.phone,
+        icon: 'phone',
+        href: `tel:${contactConfig.phoneE164}`,
+      },
       { id: 'location', label: contactConfig.address, icon: 'map' },
       { id: 'remote', label: 'Global Remote Collaboration', icon: 'globe' },
     ],

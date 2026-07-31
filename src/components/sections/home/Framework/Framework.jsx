@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import Container from '@/components/common/Container'
 import { FadeIn, FadeInStagger, FadeInItem } from '@/components/common/FadeIn'
@@ -12,122 +11,16 @@ function formatTime(seconds) {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-function HighlightIcon({ name }) {
-  const common = {
-    width: 14,
-    height: 14,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.8,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    'aria-hidden': true,
-  }
-
-  switch (name) {
-    case 'chart':
-      return (
-        <svg {...common}>
-          <path d="M4 19V5M4 19h16" />
-          <path d="M8 15l3-4 3 2 5-7" />
-        </svg>
-      )
-    case 'diamond':
-      return (
-        <svg {...common}>
-          <path d="M12 3l8 8-8 10L4 11l8-8z" />
-        </svg>
-      )
-    case 'users':
-      return (
-        <svg {...common}>
-          <circle cx="9" cy="8" r="3" />
-          <circle cx="17" cy="9" r="2.5" />
-          <path d="M3 19c1.5-3 4-4.5 6-4.5S13.5 16 15 19" />
-          <path d="M14 14.5c1.2 0 2.8.6 4 2.5" />
-        </svg>
-      )
-    case 'target':
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="8" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      )
-    case 'map':
-      return (
-        <svg {...common}>
-          <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2V6z" />
-          <path d="M9 4v14M15 6v14" />
-        </svg>
-      )
-    case 'compass':
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M14.5 9.5L10 14l4.5-1.5L16 9.5 14.5 9.5z" />
-        </svg>
-      )
-    case 'layers':
-      return (
-        <svg {...common}>
-          <path d="M12 3l9 5-9 5-9-5 9-5z" />
-          <path d="M3 12l9 5 9-5M3 16l9 5 9-5" />
-        </svg>
-      )
-    case 'check':
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M8 12.5l2.5 2.5L16 9.5" />
-        </svg>
-      )
-    case 'shield':
-      return (
-        <svg {...common}>
-          <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" />
-          <path d="M9 12l2 2 4-4" />
-        </svg>
-      )
-    case 'code':
-      return (
-        <svg {...common}>
-          <path d="M8 8L4 12l4 4M16 8l4 4-4 4M14 6l-4 12" />
-        </svg>
-      )
-    case 'cycle':
-      return (
-        <svg {...common}>
-          <path d="M4 12a8 8 0 0113.5-5.8M20 12a8 8 0 01-13.5 5.8" />
-          <path d="M17 3v4h4M7 21v-4H3" />
-        </svg>
-      )
-    case 'rocket':
-      return (
-        <svg {...common}>
-          <path d="M12 3c3 2 5 5.5 5 9.5 0 2-1 4-3 5.5L12 21l-2-3C8 16.5 7 14.5 7 12.5 7 8.5 9 5 12 3z" />
-          <circle cx="12" cy="11" r="1.5" />
-        </svg>
-      )
-    default:
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      )
-  }
-}
-
-function stageStartAt(stageIndex, count, totalDuration) {
-  if (!totalDuration || count <= 0) return 0
-  return (totalDuration / count) * stageIndex
+function stageStartAt(stage, stageIndex, stages, totalDuration) {
+  if (typeof stage?.startAt === 'number') return stage.startAt
+  if (!totalDuration || stages.length <= 0) return 0
+  return (totalDuration / stages.length) * stageIndex
 }
 
 function stageFromTime(time, stages, totalDuration) {
   let current = stages[0]
   for (let i = 0; i < stages.length; i += 1) {
-    const start = stageStartAt(i, stages.length, totalDuration)
+    const start = stageStartAt(stages[i], i, stages, totalDuration)
     if (time >= start) current = stages[i]
   }
   return current
@@ -143,15 +36,12 @@ const Framework = () => {
   const [duration, setDuration] = useState(framework.duration)
   const [muted, setMuted] = useState(true)
 
-  const activeStage =
-    framework.stages.find((stage) => stage.id === activeId) || framework.stages[0]
-
   const progress = duration > 0 ? Math.min(1, currentTime / duration) : 0
 
   const seekToStage = useCallback(
     (stage) => {
       const index = framework.stages.findIndex((s) => s.id === stage.id)
-      const start = stageStartAt(Math.max(0, index), framework.stages.length, duration)
+      const start = stageStartAt(stage, Math.max(0, index), framework.stages, duration)
       setActiveId(stage.id)
       setCurrentTime(start)
 
@@ -184,7 +74,7 @@ const Framework = () => {
     setPlaying((prev) => !prev)
   }, [hasVideo])
 
-  // Poster-only chapter playback: advance time + sync active stage
+  // Poster-only chapter playback fallback
   useEffect(() => {
     if (hasVideo || !playing) return undefined
 
@@ -250,7 +140,12 @@ const Framework = () => {
             </span>
           </FadeIn>
 
-          <FadeIn as="h2" delay={0.12} y={22} className="mt-5 font-primary text-3xl font-bold tracking-tight text-[#0A1B3D] sm:text-4xl lg:text-[2.75rem]">
+          <FadeIn
+            as="h2"
+            delay={0.12}
+            y={22}
+            className="mt-5 font-primary text-3xl font-bold tracking-tight text-[#0A1B3D] sm:text-4xl lg:text-[2.75rem]"
+          >
             {framework.title}
           </FadeIn>
           <FadeIn as="p" delay={0.2} className="mt-4 text-base leading-relaxed text-[#5A6A7A] sm:text-lg">
@@ -259,74 +154,40 @@ const Framework = () => {
         </div>
 
         <div className="mt-12 grid gap-8 lg:grid-cols-[1.45fr_0.85fr] lg:items-center">
-          {/* LEFT — video + stage content overlay */}
-          <FadeIn y={24} amount={0.2} className="relative overflow-hidden rounded-[20px] bg-neutral-900 shadow-[0_24px_60px_rgba(16,42,67,0.18)] sm:rounded-[28px]">
-            {hasVideo ? (
-              <video
-                ref={videoRef}
-                className="absolute inset-0 h-full w-full object-cover"
-                src={framework.videoSrc}
-                muted={muted}
-                playsInline
-                preload="auto"
-                onTimeUpdate={onTimeUpdate}
-                onLoadedMetadata={() => {
-                  if (videoRef.current?.duration) {
-                    setDuration(videoRef.current.duration)
-                  }
-                }}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-                onEnded={() => setPlaying(false)}
-              />
-            ) : (
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-[#0A1B3D] via-[#132847] to-[#1E4A8C]"
-                aria-hidden="true"
-              />
-            )}
-
-            {/* Keep overlay readable over the road footage */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/15" />
-
-            <div className="relative z-10 flex min-h-[360px] flex-col justify-between p-4 sm:min-h-[480px] sm:p-8 lg:min-h-[560px] lg:p-10">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeStage.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.28 }}
-                  className="max-w-md"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/90">
-                    Stage
-                  </p>
-                  <p className="mt-1 font-primary text-4xl font-bold text-[#5BA8FF]/90 sm:text-6xl lg:text-7xl">
-                    {activeStage.number}
-                  </p>
-                  <h3 className="mt-2 font-primary text-xl font-bold text-white sm:text-3xl">
-                    {activeStage.title}
-                  </h3>
-
-                  <ul className="mt-5 space-y-3 sm:mt-8 sm:space-y-5">
-                    {activeStage.highlights.map((item) => (
-                      <li key={item.title} className="flex gap-3">
-                        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-[#4BA3FF]/80 bg-[#2F80ED]/20 text-[#9DC9FF] sm:size-8">
-                          <HighlightIcon name={item.icon} />
-                        </span>
-                        <p className="min-w-0 text-sm leading-relaxed text-white/90 sm:text-[15px]">
-                          <span className="font-semibold text-white">{item.title}</span>{' '}
-                          <span className="text-white/80">{item.description}</span>
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              </AnimatePresence>
+          {/* LEFT — video only (stage copy is baked into the footage) */}
+          <FadeIn
+            y={24}
+            amount={0.2}
+            className="relative overflow-hidden rounded-[20px] bg-black shadow-[0_24px_60px_rgba(16,42,67,0.18)] sm:rounded-[28px]"
+          >
+            <div className="relative aspect-video w-full min-h-[220px] sm:min-h-[360px] lg:min-h-[420px]">
+              {hasVideo ? (
+                <video
+                  ref={videoRef}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  src={framework.videoSrc}
+                  muted={muted}
+                  playsInline
+                  preload="metadata"
+                  onTimeUpdate={onTimeUpdate}
+                  onLoadedMetadata={() => {
+                    if (videoRef.current?.duration) {
+                      setDuration(videoRef.current.duration)
+                    }
+                  }}
+                  onPlay={() => setPlaying(true)}
+                  onPause={() => setPlaying(false)}
+                  onEnded={() => setPlaying(false)}
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-[#0A1B3D] via-[#132847] to-[#1E4A8C]"
+                  aria-hidden="true"
+                />
+              )}
 
               {!playing && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/25">
                   <button
                     type="button"
                     onClick={togglePlay}
@@ -340,85 +201,103 @@ const Framework = () => {
                 </div>
               )}
 
-              {/* Custom control bar */}
-              <div className="mt-6 flex flex-wrap items-center gap-2 rounded-2xl bg-black/50 px-3 py-2.5 text-xs text-white/85 backdrop-blur sm:mt-8 sm:flex-nowrap sm:gap-3 sm:rounded-full sm:px-4">
-                <button
-                  type="button"
-                  onClick={togglePlay}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
-                  aria-label={playing ? 'Pause' : 'Play'}
-                >
-                  {playing ? (
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-                      <path d="M2 1h3v10H2V1zm5 0h3v10H7V1z" />
-                    </svg>
-                  ) : (
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-                      <path d="M3 1.5v9L10 6 3 1.5z" />
-                    </svg>
-                  )}
-                </button>
-
-                <span className="shrink-0 tabular-nums">
-                  <span className="sm:hidden">{formatTime(currentTime)}</span>
-                  <span className="hidden sm:inline">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                  </span>
-                </span>
-
-                <button
-                  type="button"
-                  className="mx-0 h-3 min-w-0 flex-1 basis-full overflow-hidden rounded-full bg-white/20 sm:mx-1 sm:h-2 sm:basis-auto"
-                  aria-label="Seek"
-                  onClick={onSeekBar}
-                >
-                  <span
-                    className="relative block h-full rounded-full bg-[#2F80ED]"
-                    style={{ width: `${progress * 100}%` }}
+              {/* Controls */}
+              <div className="absolute inset-x-0 bottom-0 z-10 p-3 sm:p-4">
+                <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-black/55 px-3 py-2.5 text-xs text-white/85 backdrop-blur sm:flex-nowrap sm:gap-3 sm:rounded-full sm:px-4">
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    aria-label={playing ? 'Pause' : 'Play'}
                   >
-                    <span className="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2 rounded-full bg-white shadow" />
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMuted((m) => !m)
-                    if (videoRef.current) videoRef.current.muted = !muted
-                  }}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
-                  aria-label={muted ? 'Unmute' : 'Mute'}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                    {muted ? (
-                      <>
-                        <path d="M11 5L6 9H3v6h3l5 4V5z" />
-                        <path d="M16 9l5 5M21 9l-5 5" />
-                      </>
+                    {playing ? (
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                        <path d="M2 1h3v10H2V1zm5 0h3v10H7V1z" />
+                      </svg>
                     ) : (
-                      <>
-                        <path d="M11 5L6 9H3v6h3l5 4V5z" />
-                        <path d="M15.5 8.5a5 5 0 010 7M18.5 6a9 9 0 010 12" />
-                      </>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                        <path d="M3 1.5v9L10 6 3 1.5z" />
+                      </svg>
                     )}
-                  </svg>
-                </button>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={toggleFullscreen}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
-                  aria-label="Fullscreen"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
-                  </svg>
-                </button>
+                  <span className="shrink-0 tabular-nums">
+                    <span className="sm:hidden">{formatTime(currentTime)}</span>
+                    <span className="hidden sm:inline">
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
+                  </span>
+
+                  <button
+                    type="button"
+                    className="mx-0 h-3 min-w-0 flex-1 basis-full overflow-hidden rounded-full bg-white/20 sm:mx-1 sm:h-2 sm:basis-auto"
+                    aria-label="Seek"
+                    onClick={onSeekBar}
+                  >
+                    <span
+                      className="relative block h-full rounded-full bg-[#2F80ED]"
+                      style={{ width: `${progress * 100}%` }}
+                    >
+                      <span className="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2 rounded-full bg-white shadow" />
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMuted((m) => !m)
+                      if (videoRef.current) videoRef.current.muted = !muted
+                    }}
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    aria-label={muted ? 'Unmute' : 'Mute'}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      aria-hidden="true"
+                    >
+                      {muted ? (
+                        <>
+                          <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                          <path d="M16 9l5 5M21 9l-5 5" />
+                        </>
+                      ) : (
+                        <>
+                          <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                          <path d="M15.5 8.5a5 5 0 010 7M18.5 6a9 9 0 010 12" />
+                        </>
+                      )}
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={toggleFullscreen}
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    aria-label="Fullscreen"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </FadeIn>
 
-          {/* RIGHT — flow structure for the video stages */}
+          {/* RIGHT — stage list synced to video chapters */}
           <div className="relative flex flex-col justify-center lg:pl-2">
             <div
               className="pointer-events-none absolute bottom-7 left-[27px] top-7 w-px border-l border-dashed border-[#C9D7E8]"
@@ -449,19 +328,13 @@ const Framework = () => {
                       <span
                         className={clsx(
                           'flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold',
-                          isActive
-                            ? 'bg-[#0A1B3D] text-white'
-                            : 'bg-[#EEF3F8] text-[#7B8794]'
+                          isActive ? 'bg-[#0A1B3D] text-white' : 'bg-[#EEF3F8] text-[#7B8794]'
                         )}
                       >
                         {stage.number}
                       </span>
                       <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#F0F6FC] sm:size-12">
-                        <img
-                          src={stage.icon}
-                          alt=""
-                          className="size-7 object-contain sm:size-8"
-                        />
+                        <img src={stage.icon} alt="" className="size-7 object-contain sm:size-8" />
                       </span>
                       <span
                         className={clsx(
@@ -479,7 +352,11 @@ const Framework = () => {
           </div>
         </div>
 
-        <FadeIn as="p" delay={0.1} className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-[#7B8794]">
+        <FadeIn
+          as="p"
+          delay={0.1}
+          className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-[#7B8794]"
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-[#A0ADB8]">
             <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" strokeWidth="1.6" />
             <path d="M12 6v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />

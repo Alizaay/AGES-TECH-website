@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Navbar from '@/components/navigation/Navbar'
 import Footer from './Footer'
 import ScrollToTop from '@/components/feedback/ScrollToTop'
+import WhatsAppFloat from '@/components/common/WhatsAppFloat'
 import useScrollToHash from '@/hooks/useScrollToHash'
 
 const Layout = () => {
@@ -15,6 +16,7 @@ const Layout = () => {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppFloat />
     </div>
   )
 }
