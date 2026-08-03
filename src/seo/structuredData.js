@@ -10,6 +10,15 @@ export const organizationSchema = () => ({
   description: company.description,
   url: seo.siteUrl || undefined,
   email: contact.email || undefined,
+  telephone: contact.phoneE164 || contact.phone || undefined,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '16030 Michigan Avenue',
+    addressLocality: 'Dearborn',
+    addressRegion: 'MI',
+    postalCode: '48120',
+    addressCountry: 'US',
+  },
   sameAs: Object.values(social).filter((url) => url && url !== '#'),
 })
 

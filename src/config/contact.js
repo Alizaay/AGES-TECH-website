@@ -7,7 +7,8 @@ export const contact = {
     import.meta.env.VITE_WHATSAPP_URL ||
     'https://wa.me/13137227220?text=Hello%20AGES-TECH%2C%20I%20would%20like%20to%20learn%20more.',
   address:
-    import.meta.env.VITE_CONTACT_ADDRESS || 'Dearborn, Michigan, USA',
+    import.meta.env.VITE_CONTACT_ADDRESS ||
+    '16030 Michigan Avenue, Dearborn, 48120, MI, USA',
 }
 
 export default contact

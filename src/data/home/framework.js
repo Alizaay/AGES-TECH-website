@@ -2,17 +2,16 @@ import videoSrc from '@/assets/videos/Ages-tech.mp4'
 import { STAGES } from '@/data/stages'
 
 /**
- * 7-stage timestamps (seconds) — evenly paced across the ~56s video.
- * Adjust these if chapter markers in the new footage differ.
+ * 7-stage chapter start times (seconds) synced to Ages-tech.mp4.
  */
 const STAGE_START_AT = {
   1: 0,
-  2: 8,
-  3: 16,
-  4: 24,
-  5: 32,
-  6: 40,
-  7: 48,
+  2: 7,
+  3: 13,
+  4: 22,
+  5: 29,
+  6: 36,
+  7: 41,
 }
 
 /**

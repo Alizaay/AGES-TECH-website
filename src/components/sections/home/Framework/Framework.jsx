@@ -26,8 +26,11 @@ function stageFromTime(time, stages, totalDuration) {
   return current
 }
 
+const CONTROLS_HIDE_MS = 2500
+
 const Framework = () => {
   const videoRef = useRef(null)
+  const hideControlsTimer = useRef(null)
   const hasVideo = Boolean(framework.videoSrc)
 
   const [activeId, setActiveId] = useState(framework.defaultStageId)
@@ -35,8 +38,40 @@ const Framework = () => {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(framework.duration)
   const [muted, setMuted] = useState(true)
+  const [showControls, setShowControls] = useState(true)
 
   const progress = duration > 0 ? Math.min(1, currentTime / duration) : 0
+
+  const clearHideTimer = useCallback(() => {
+    if (hideControlsTimer.current) {
+      window.clearTimeout(hideControlsTimer.current)
+      hideControlsTimer.current = null
+    }
+  }, [])
+
+  const scheduleHideControls = useCallback(() => {
+    clearHideTimer()
+    hideControlsTimer.current = window.setTimeout(() => {
+      setShowControls(false)
+    }, CONTROLS_HIDE_MS)
+  }, [clearHideTimer])
+
+  const revealControls = useCallback(() => {
+    setShowControls(true)
+    if (playing) scheduleHideControls()
+    else clearHideTimer()
+  }, [playing, scheduleHideControls, clearHideTimer])
+
+  useEffect(() => {
+    if (playing) {
+      setShowControls(true)
+      scheduleHideControls()
+    } else {
+      clearHideTimer()
+      setShowControls(true)
+    }
+    return clearHideTimer
+  }, [playing, scheduleHideControls, clearHideTimer])
 
   const seekToStage = useCallback(
     (stage) => {
@@ -103,6 +138,7 @@ const Framework = () => {
   }
 
   const onSeekBar = (event) => {
+    revealControls()
     const rect = event.currentTarget.getBoundingClientRect()
     const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width))
     const next = ratio * duration
@@ -115,7 +151,14 @@ const Framework = () => {
     }
   }
 
+  const toggleMute = () => {
+    revealControls()
+    setMuted((m) => !m)
+    if (videoRef.current) videoRef.current.muted = !muted
+  }
+
   const toggleFullscreen = () => {
+    revealControls()
     const wrap = videoRef.current?.parentElement
     if (!wrap) return
     if (document.fullscreenElement) {
@@ -124,6 +167,14 @@ const Framework = () => {
       wrap.requestFullscreen?.()
     }
   }
+
+  const onVideoSurfaceClick = () => {
+    if (!playing) return
+    if (showControls) setShowControls(false)
+    else revealControls()
+  }
+
+  const controlsVisible = !playing || showControls
 
   return (
     <section id="framework" className="section bg-[#F8FBFE]">
@@ -160,7 +211,11 @@ const Framework = () => {
             amount={0.2}
             className="relative overflow-hidden rounded-[20px] bg-black shadow-[0_24px_60px_rgba(16,42,67,0.18)] sm:rounded-[28px]"
           >
-            <div className="relative aspect-video w-full min-h-[220px] sm:min-h-[360px] lg:min-h-[420px]">
+            <div
+              className="relative aspect-video w-full min-h-[220px] sm:min-h-[360px] lg:min-h-[420px]"
+              onClick={onVideoSurfaceClick}
+              onMouseMove={revealControls}
+            >
               {hasVideo ? (
                 <video
                   ref={videoRef}
@@ -190,7 +245,10 @@ const Framework = () => {
                 <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/25">
                   <button
                     type="button"
-                    onClick={togglePlay}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      togglePlay()
+                    }}
                     className="pointer-events-auto flex size-14 items-center justify-center rounded-full bg-white/90 text-[#0A1B3D] shadow-lg transition hover:scale-105 hover:bg-white sm:size-[72px]"
                     aria-label="Play framework video"
                   >
@@ -201,13 +259,75 @@ const Framework = () => {
                 </div>
               )}
 
-              {/* Controls */}
-              <div className="absolute inset-x-0 bottom-0 z-10 p-3 sm:p-4">
-                <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-black/55 px-3 py-2.5 text-xs text-white/85 backdrop-blur sm:flex-nowrap sm:gap-3 sm:rounded-full sm:px-4">
+              {/* Mobile — compact top-right controls */}
+              <div
+                className={clsx(
+                  'absolute right-2.5 top-2.5 z-20 flex items-center gap-1.5 rounded-full bg-black/60 p-1 text-white backdrop-blur transition-opacity duration-300 sm:hidden',
+                  controlsVisible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={togglePlay}
+                  className="flex size-9 items-center justify-center rounded-full bg-white/10"
+                  aria-label={playing ? 'Pause' : 'Play'}
+                >
+                  {playing ? (
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <path d="M2 1h3v10H2V1zm5 0h3v10H7V1z" />
+                    </svg>
+                  ) : (
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <path d="M3 1.5v9L10 6 3 1.5z" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  className="flex size-9 items-center justify-center rounded-full bg-white/10"
+                  aria-label={muted ? 'Unmute' : 'Mute'}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    {muted ? (
+                      <>
+                        <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                        <path d="M16 9l5 5M21 9l-5 5" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                        <path d="M15.5 8.5a5 5 0 010 7M18.5 6a9 9 0 010 12" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleFullscreen}
+                  className="flex size-9 items-center justify-center rounded-full bg-white/10"
+                  aria-label="Fullscreen"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Desktop — bottom control bar */}
+              <div
+                className={clsx(
+                  'absolute inset-x-0 bottom-0 z-20 hidden p-3 transition-opacity duration-300 sm:block sm:p-4',
+                  controlsVisible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center gap-3 rounded-full bg-black/55 px-4 py-2.5 text-xs text-white/85 backdrop-blur">
                   <button
                     type="button"
                     onClick={togglePlay}
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
                     aria-label={playing ? 'Pause' : 'Play'}
                   >
                     {playing ? (
@@ -222,15 +342,12 @@ const Framework = () => {
                   </button>
 
                   <span className="shrink-0 tabular-nums">
-                    <span className="sm:hidden">{formatTime(currentTime)}</span>
-                    <span className="hidden sm:inline">
-                      {formatTime(currentTime)} / {formatTime(duration)}
-                    </span>
+                    {formatTime(currentTime)} / {formatTime(duration)}
                   </span>
 
                   <button
                     type="button"
-                    className="mx-0 h-3 min-w-0 flex-1 basis-full overflow-hidden rounded-full bg-white/20 sm:mx-1 sm:h-2 sm:basis-auto"
+                    className="mx-1 h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-white/20"
                     aria-label="Seek"
                     onClick={onSeekBar}
                   >
@@ -244,22 +361,11 @@ const Framework = () => {
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setMuted((m) => !m)
-                      if (videoRef.current) videoRef.current.muted = !muted
-                    }}
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    onClick={toggleMute}
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
                     aria-label={muted ? 'Unmute' : 'Mute'}
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      aria-hidden="true"
-                    >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       {muted ? (
                         <>
                           <path d="M11 5L6 9H3v6h3l5 4V5z" />
@@ -277,18 +383,10 @@ const Framework = () => {
                   <button
                     type="button"
                     onClick={toggleFullscreen}
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20 sm:size-10"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
                     aria-label="Fullscreen"
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      aria-hidden="true"
-                    >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
                     </svg>
                   </button>
