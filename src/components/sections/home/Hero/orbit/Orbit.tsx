@@ -56,7 +56,7 @@ export function Orbit({
     items,
     rotationSpeed,
     enabled: true,
-    direction: 'anticlockwise',
+    direction: 'clockwise',
   })
 
   return (
