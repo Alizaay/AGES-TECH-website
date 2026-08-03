@@ -15,7 +15,7 @@ function OrbitNode({
 }) {
   return (
     <div className="flex w-[78px] -translate-x-1/2 -translate-y-1/2 flex-col items-center sm:w-[88px] md:w-[96px] xl:w-[112px]">
-      <span className="mb-1 flex size-[17px] items-center justify-center rounded-full bg-[#2F80ED] text-[8px] font-bold leading-none text-white sm:size-[20px] sm:text-[9px] md:size-[22px] md:text-[10px] xl:mb-1.5 xl:size-[24px] xl:text-[11px]">
+      <span className="mb-1 flex size-[17px] items-center justify-center rounded-full bg-[#FFFFFF] text-[8px] font-bold leading-none text-white sm:size-[20px] sm:text-[9px] md:size-[22px] md:text-[10px] xl:mb-1.5 xl:size-[24px] xl:text-[11px]">
         {number}
       </span>
 
