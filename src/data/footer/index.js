@@ -14,8 +14,8 @@ export const footer = {
   },
   copyright: {
     before: `© ${new Date().getFullYear()}`,
-    company: 'AllianceSoft',
-    companyUrl: 'https://alliancesoftwaresolutions.com/',
+    company: 'AGES-TECH LLC',
+    companyUrl: 'https://ages-tech.com/',
     after: 'All rights reserved.',
   },
 }
