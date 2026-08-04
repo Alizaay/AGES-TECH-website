@@ -34,7 +34,7 @@ export const hero = {
   },
   description:
     'We engineer scalable business systems, intelligent products, and operational frameworks that help organizations innovate, modernize, and grow with confidence.',
-  primaryCt: {
+  primaryCta: {
     label: 'Start Your Project',
     to: '/contact',
   },
