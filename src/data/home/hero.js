@@ -27,7 +27,7 @@ export const heroStages = frameworkOrbitItems.map((item, index) => ({
 }))
 
 export const hero = {
-  eyebrow: ['DESIGN', 'BUILD', 'SCALE'],
+  eyebrow: ['ENGINEERING', 'INNOVATION', 'IMPACT'],
   title: {
     lead: 'Transform Business Systems Into',
     accent: 'Scalable Operations',
