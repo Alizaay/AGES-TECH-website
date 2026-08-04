@@ -29,13 +29,13 @@ export const heroStages = frameworkOrbitItems.map((item, index) => ({
 export const hero = {
   eyebrow: ['DESIGN', 'BUILD', 'SCALE'],
   title: {
-    lead: 'Engineering Intelligent',
-    accent: 'Business Systems',
+    lead: 'Transform Business Systems Into',
+    accent: 'Scalable Operations',
   },
   description:
-    'We design intelligent systems, scalable ventures, and operational frameworks that transform ideas into sustainable business engines',
+    'We engineer scalable business systems, intelligent products, and operational frameworks that help organizations innovate, modernize, and grow with confidence.',
   primaryCt: {
-    label: 'Begin Your Journey',
+    label: 'Start Your Project',
     to: '/contact',
   },
   secondaryCta: {
