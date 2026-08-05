@@ -33,6 +33,8 @@ export interface OrbitProps {
   centerLogo?: string
   /** Optional class for the center logo image */
   centerLogoClassName?: string
+  /** Optional class for the center circle container */
+  centerClassName?: string
   className?: string
   /** @deprecated Continuous orbit; kept for API compat */
   autoRotate?: boolean

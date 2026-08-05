@@ -28,10 +28,10 @@ const BrandLogo = ({
         'w-auto object-contain object-left',
         isMark
           ? 'h-9 max-w-[40px] sm:h-12 sm:max-w-none md:h-14'
-          : 'h-9 max-w-[min(148px,48vw)] xs:max-w-[min(170px,55vw)] sm:h-14 sm:max-w-none md:h-16 lg:h-[4.25rem]'
+          : 'h-11 max-w-[min(180px,52vw)] xs:max-w-[min(200px,58vw)] sm:h-16 sm:max-w-none md:h-[4.5rem] lg:h-[5.25rem]'
       )}
-      width={isMark ? 56 : 280}
-      height={isMark ? 56 : 80}
+      width={isMark ? 56 : 320}
+      height={isMark ? 56 : 96}
     />
   )
 
@@ -39,7 +39,7 @@ const BrandLogo = ({
     'inline-flex items-center',
     isMark
       ? 'shrink-0'
-      : 'max-w-[min(148px,48vw)] xs:max-w-[min(170px,55vw)] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[420px]',
+      : 'max-w-[min(180px,52vw)] xs:max-w-[min(200px,58vw)] sm:max-w-[360px] md:max-w-[420px] lg:max-w-[480px]',
     className
   )
 

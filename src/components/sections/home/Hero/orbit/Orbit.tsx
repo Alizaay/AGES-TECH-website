@@ -48,6 +48,7 @@ export function Orbit({
   rotationSpeed = 40,
   centerLogo = logoMark,
   centerLogoClassName,
+  centerClassName,
   className,
 }: OrbitProps) {
   const items = categories[0]?.items ?? []
@@ -56,7 +57,7 @@ export function Orbit({
     items,
     rotationSpeed,
     enabled: true,
-    direction: 'anticlockwise',
+    direction: 'clockwise',
   })
 
   return (
@@ -98,7 +99,13 @@ export function Orbit({
         ))}
       </div>
 
-      <div className="absolute left-1/2 top-1/2 z-30 flex size-[64px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#0A1B3D] shadow-[0_0_0_6px_rgba(47,128,237,0.1),0_0_0_12px_rgba(47,128,237,0.05),0_12px_28px_rgba(10,27,61,0.3)] sm:size-[76px] md:size-[88px] xl:size-[118px] xl:shadow-[0_0_0_8px_rgba(47,128,237,0.1),0_0_0_18px_rgba(47,128,237,0.05),0_18px_40px_rgba(10,27,61,0.3)]">
+      <div
+        className={clsx(
+          'absolute left-1/2 top-1/2 z-30 flex size-[64px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full sm:size-[76px] md:size-[88px] xl:size-[118px]',
+          centerClassName ??
+            'border border-[#E4EEF8] bg-white shadow-[0_0_0_6px_rgba(47,128,237,0.1),0_0_0_12px_rgba(47,128,237,0.05),0_12px_28px_rgba(16,42,67,0.12)] xl:shadow-[0_0_0_8px_rgba(47,128,237,0.1),0_0_0_18px_rgba(47,128,237,0.05),0_18px_40px_rgba(16,42,67,0.14)]'
+        )}
+      >
         <img
           src={centerLogo}
           alt="AGES-TECH"

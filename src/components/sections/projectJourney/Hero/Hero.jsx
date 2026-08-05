@@ -21,7 +21,7 @@ const FEATURE_ICONS = {
 
 /**
  * Same orbit stage as Home — reserved height so labels don’t collide.
- * Center mark uses project-journey `center.png`.
+ * Center hub is dark so `center.png` lightbulb reads clearly.
  */
 const JourneyOrbitStage = () => (
   <div
@@ -39,7 +39,8 @@ const JourneyOrbitStage = () => (
         categories={heroOrbitCategories}
         rotationSpeed={40}
         centerLogo={centerLogo}
-        centerLogoClassName="!size-[72%] mix-blend-screen"
+        centerClassName="border-0 bg-[#0A1B3D] shadow-[0_0_0_6px_rgba(77,183,232,0.18),0_0_0_14px_rgba(47,128,237,0.1),0_0_36px_rgba(77,183,232,0.45),0_14px_32px_rgba(10,27,61,0.35)] xl:shadow-[0_0_0_8px_rgba(77,183,232,0.2),0_0_0_18px_rgba(47,128,237,0.12),0_0_48px_rgba(77,183,232,0.5),0_18px_40px_rgba(10,27,61,0.4)]"
+        centerLogoClassName="!size-[78%] mix-blend-screen"
         className="!max-w-none h-full w-full max-h-full"
       />
     </div>
