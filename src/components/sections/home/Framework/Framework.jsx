@@ -30,6 +30,7 @@ const CONTROLS_HIDE_MS = 2500
 
 const Framework = () => {
   const videoRef = useRef(null)
+  const playerRef = useRef(null)
   const hideControlsTimer = useRef(null)
   const hasVideo = Boolean(framework.videoSrc)
 
@@ -39,6 +40,7 @@ const Framework = () => {
   const [duration, setDuration] = useState(framework.duration)
   const [muted, setMuted] = useState(true)
   const [showControls, setShowControls] = useState(true)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const progress = duration > 0 ? Math.min(1, currentTime / duration) : 0
 
@@ -157,16 +159,123 @@ const Framework = () => {
     if (videoRef.current) videoRef.current.muted = !muted
   }
 
-  const toggleFullscreen = () => {
-    revealControls()
-    const wrap = videoRef.current?.parentElement
-    if (!wrap) return
-    if (document.fullscreenElement) {
-      document.exitFullscreen?.()
-    } else {
-      wrap.requestFullscreen?.()
+  const getFullscreenElement = () =>
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.webkitCurrentFullScreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement ||
+    null
+
+  const exitFullscreen = async () => {
+    const video = videoRef.current
+    if (video?.webkitDisplayingFullscreen && video.webkitExitFullscreen) {
+      video.webkitExitFullscreen()
+      return
+    }
+
+    const docExit =
+      document.exitFullscreen ||
+      document.webkitExitFullscreen ||
+      document.webkitCancelFullScreen ||
+      document.mozCancelFullScreen ||
+      document.msExitFullscreen
+
+    if (docExit) {
+      try {
+        await docExit.call(document)
+      } catch {
+        /* ignore */
+      }
     }
   }
+
+  const enterFullscreen = async () => {
+    const video = videoRef.current
+    const wrap = playerRef.current
+
+    // iOS Safari: only the <video> element can go fullscreen
+    if (typeof video?.webkitEnterFullscreen === 'function') {
+      try {
+        video.webkitEnterFullscreen()
+        return
+      } catch {
+        /* fall through */
+      }
+    }
+
+    const target = wrap || video
+    if (!target) return
+
+    const request =
+      target.requestFullscreen ||
+      target.webkitRequestFullscreen ||
+      target.webkitRequestFullScreen ||
+      target.mozRequestFullScreen ||
+      target.msRequestFullscreen
+
+    if (request) {
+      try {
+        await request.call(target)
+        return
+      } catch {
+        /* fall through */
+      }
+    }
+
+    // Last resort — try the video element directly
+    if (video && video !== target) {
+      const videoRequest =
+        video.requestFullscreen ||
+        video.webkitRequestFullscreen ||
+        video.webkitRequestFullScreen
+      if (videoRequest) {
+        try {
+          await videoRequest.call(video)
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  }
+
+  const toggleFullscreen = async (event) => {
+    event?.stopPropagation?.()
+    event?.preventDefault?.()
+    revealControls()
+
+    if (getFullscreenElement() || videoRef.current?.webkitDisplayingFullscreen) {
+      await exitFullscreen()
+    } else {
+      await enterFullscreen()
+    }
+  }
+
+  useEffect(() => {
+    const syncFullscreenState = () => {
+      setIsFullscreen(
+        Boolean(getFullscreenElement() || videoRef.current?.webkitDisplayingFullscreen)
+      )
+    }
+
+    const events = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange',
+    ]
+    events.forEach((name) => document.addEventListener(name, syncFullscreenState))
+
+    const video = videoRef.current
+    video?.addEventListener('webkitbeginfullscreen', syncFullscreenState)
+    video?.addEventListener('webkitendfullscreen', syncFullscreenState)
+
+    return () => {
+      events.forEach((name) => document.removeEventListener(name, syncFullscreenState))
+      video?.removeEventListener('webkitbeginfullscreen', syncFullscreenState)
+      video?.removeEventListener('webkitendfullscreen', syncFullscreenState)
+    }
+  }, [])
 
   const onVideoSurfaceClick = () => {
     if (!playing) return
@@ -212,6 +321,7 @@ const Framework = () => {
             className="relative overflow-hidden rounded-[20px] bg-black shadow-[0_24px_60px_rgba(16,42,67,0.18)] sm:rounded-[28px]"
           >
             <div
+              ref={playerRef}
               className="relative aspect-video w-full min-h-[220px] sm:min-h-[360px] lg:min-h-[420px]"
               onClick={onVideoSurfaceClick}
               onMouseMove={revealControls}
@@ -307,10 +417,14 @@ const Framework = () => {
                   type="button"
                   onClick={toggleFullscreen}
                   className="flex size-9 items-center justify-center rounded-full bg-white/10"
-                  aria-label="Fullscreen"
+                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                    {isFullscreen ? (
+                      <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M20 15v5h-5" />
+                    ) : (
+                      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                    )}
                   </svg>
                 </button>
               </div>
@@ -384,10 +498,14 @@ const Framework = () => {
                     type="button"
                     onClick={toggleFullscreen}
                     className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
-                    aria-label="Fullscreen"
+                    aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                      {isFullscreen ? (
+                        <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M20 15v5h-5" />
+                      ) : (
+                        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                      )}
                     </svg>
                   </button>
                 </div>
