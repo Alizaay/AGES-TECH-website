@@ -1,4 +1,4 @@
-import ceoPortrait from '@/assets/images/about/CEO Image.png'
+import ceoPortrait from '@/assets/images/about/CEO Image.jpg'
 import character360Diagram from '@/assets/images/about/character360-diagram.png'
 import highlightCharacter360 from '@/assets/images/about/highlights/character360.jpg'
 import highlightMedInsight from '@/assets/images/about/highlights/medinsight.jpg'

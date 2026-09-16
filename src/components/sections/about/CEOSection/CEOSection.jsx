@@ -117,7 +117,7 @@ const CEOSection = () => {
                 <img
                   src={ceoVision.portrait}
                   alt={ceoVision.name}
-                  className="aspect-[3/4] h-auto w-full object-contain object-center"
+                  className="aspect-[3/4] h-auto w-full object-cover object-center"
                   width={480}
                   height={640}
                 />

@@ -37,7 +37,7 @@ const ICONS = [
   },
 ]
 
-const TARGET_YEARS = 8
+const TARGET_YEARS = 25
 
 const ExperienceDiagram = ({ className = '' }) => {
   const reduceMotion = useReducedMotion()
@@ -68,19 +68,17 @@ const ExperienceDiagram = ({ className = '' }) => {
   useEffect(() => {
     if (!visible || reduceMotion) return undefined
 
-    let frame = 0
-    const duration = 900
-    const start = performance.now()
+    const timers = []
+    let elapsed = 0
 
-    const tick = (now) => {
-      const progress = Math.min((now - start) / duration, 1)
-      const eased = 1 - (1 - progress) ** 3
-      setYears(Math.round(eased * TARGET_YEARS))
-      if (progress < 1) frame = requestAnimationFrame(tick)
+    for (let year = 1; year <= TARGET_YEARS; year += 1) {
+      // The first values count quickly; the final jump from 24 to 25 lingers.
+      const delay = year <= 18 ? 45 : 100 + (year - 18) ** 2 * 16
+      elapsed += delay
+      timers.push(window.setTimeout(() => setYears(year), elapsed))
     }
 
-    frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
+    return () => timers.forEach((timer) => window.clearTimeout(timer))
   }, [visible, reduceMotion])
 
   return (
@@ -89,7 +87,7 @@ const ExperienceDiagram = ({ className = '' }) => {
       id="pws-circle-area"
       className={`pws-circle-area ${visible ? 'is-visible' : ''} ${className}`.trim()}
       role="img"
-      aria-label="8+ years of experience across Expertise, Impact, Commitment, and Approach"
+      aria-label="25+ years of experience across Expertise, Impact, Commitment, and Approach"
       style={{ '--radius': '34%' }}
     >
       <svg viewBox="0 0 400 400" aria-hidden="true">

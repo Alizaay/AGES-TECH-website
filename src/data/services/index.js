@@ -65,28 +65,28 @@ export const servicesHero = {
   stats: [
     {
       id: 'industries',
-      value: '25+',
+      value: '5+',
       label: 'Industries Served',
       description: 'Across multiple domains and geographies',
       icon: 'building',
     },
     {
       id: 'projects',
-      value: '120+',
+      value: '12+',
       label: 'Projects Delivered',
       description: 'Successful engagements with measurable impact',
       icon: 'users',
     },
     {
       id: 'partners',
-      value: '30+',
+      value: '3+',
       label: 'Global Partners',
       description: 'Strong network of technology and business partners',
       icon: 'globe',
     },
     {
       id: 'satisfaction',
-      value: '95%',
+      value: '98%',
       label: 'Client Satisfaction',
       description: 'Long-term relationships built on trust and results',
       icon: 'heart',
