@@ -45,9 +45,9 @@ export const ceoVision = {
     accent: 'Purpose.',
   },
   quote: [
-    'My journey began with deep research in France and the United States, where I learned that lasting innovation is built on scientific discipline and engineering rigor—not guesswork.',
-    'That foundation now guides how we lead AGES-TECH: applying research thinking, systems engineering, and entrepreneurial clarity to real-world business challenges.',
-    'We exist to engineer purpose into every platform, partnership, and product we build—so decisions are designed, not improvised.',
+    'As my research journey took shape in France, I have learned how to build hypotheses, test them with data, and refine solutions through continuous iteration. Later, my experience in the United States rewired my thinking even further, revealing a simple but powerful truth: the scientific discipline that drives innovation in engineering is exactly what modern businesses need.',
+    'Scientific method doesn’t belong only in the lab — it belongs in leadership.',
+    'AGES-TECH was founded on this principle: Businesses grow stronger when decisions are engineered, not guessed.',
   ],
   values: [
     {
