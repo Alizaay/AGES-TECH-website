@@ -108,16 +108,24 @@ const FooterTop = () => {
       <div className="relative mx-auto grid max-w-[1400px] gap-10 px-5 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-20">
         {/* Brand */}
         <FadeIn className="flex flex-col items-start lg:pr-10 xl:pr-14">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <BrandLogo lockup="mark" />
-            <div className="flex min-w-0 flex-col">
-              <span className="font-primary text-lg font-bold tracking-[0.06em] text-white sm:text-xl">
-                AGES-TECH
+          <div className="relative w-fit max-w-full overflow-hidden rounded-2xl border border-white/40 bg-white/[0.12] px-4 py-4 shadow-[0_18px_48px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-xl sm:px-5 sm:py-5">
+            <span
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.32),transparent_42%),radial-gradient(circle_at_100%_100%,rgba(77,183,232,0.2),transparent_50%)]"
+              aria-hidden="true"
+            />
+            <div className="relative flex items-center gap-3 sm:gap-4">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-white/70 bg-white/95 p-2.5 shadow-[0_10px_26px_rgba(7,31,68,0.32)] sm:size-16">
+                <BrandLogo lockup="mark" />
               </span>
-              <span className="mt-2 block h-[3px] w-11 rounded-full bg-[#2F80ED]" />
-              <p className="mt-3 max-w-[220px] text-sm leading-relaxed text-white/80">
-                Engineering the Future of Business Lines.
-              </p>
+              <div className="flex min-w-0 flex-col">
+                <span className="font-primary text-lg font-bold tracking-[0.06em] text-white sm:text-xl">
+                  AGES-TECH
+                </span>
+                <span className="mt-2 block h-[3px] w-11 rounded-full bg-[#4DB7E8] shadow-[0_0_12px_rgba(77,183,232,0.7)]" />
+                <p className="mt-3 max-w-[220px] text-sm leading-relaxed text-white/85">
+                  Engineering the Future of Business Lines.
+                </p>
+              </div>
             </div>
           </div>
         </FadeIn>
